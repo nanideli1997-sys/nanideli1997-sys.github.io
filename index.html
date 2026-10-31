@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Mi Tienda de Ropa | Tienda de ropa online</title>
   <meta name="description" content="Catálogo de Mi Tienda de Ropa · 0 prendas. Pide por WhatsApp.">
   <meta name="theme-color" content="#151515">
@@ -269,7 +272,6 @@
   <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
   <noscript><p class="container empty">Para ver el catálogo activa JavaScript en tu navegador.</p></noscript>
 
-  <script>window.TIENDA = {catalogo: "catalogo.json?v=d3aa4d8880"};</script>
-  <script src="tienda.js?v=87532a9791" defer></script>
+  <script src="tienda.js?v=66562e74c4" data-catalogo="catalogo.json?v=6d97f139d1" defer></script>
 </body>
 </html>

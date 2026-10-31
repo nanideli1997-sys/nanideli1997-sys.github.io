@@ -12,6 +12,7 @@
     get: (k, d) => { try { return JSON.parse(localStorage.getItem("tienda_" + k)) ?? d; } catch { return d; } },
     set: (k, v) => { try { localStorage.setItem("tienda_" + k, JSON.stringify(v)); } catch { /* modo privado */ } }
   };
+  const CATALOGO = document.currentScript.dataset.catalogo;
   const MAX_QTY = 10;
   const NEW_DAYS = 15;
   const money = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
@@ -660,7 +661,7 @@
   /* ---------- Inicio ---------- */
   $("#year").textContent = new Date().getFullYear();
   bindFilters();
-  fetch(window.TIENDA.catalogo, { cache: "no-cache" })
+  fetch(CATALOGO, { cache: "no-cache" })
     .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then((data) => {
       STORE = data.store || {};
