@@ -1,78 +1,226 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mi Tienda de Ropa</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Tienda de Ropa | Tienda de ropa online</title>
   <meta name="description" content="Catálogo de Mi Tienda de Ropa · 0 prendas. Pide por WhatsApp.">
-  <meta name="theme-color" content="#14213D">
+  <meta name="theme-color" content="#151515">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Mi Tienda de Ropa">
+  <meta property="og:title" content="Mi Tienda de Ropa | Tienda de ropa online">
   <meta property="og:description" content="Mira el catálogo y pide por WhatsApp.">
   
   <meta property="og:url" content="https://nanideli1997-sys.github.io/">
   <link rel="canonical" href="https://nanideli1997-sys.github.io/">
   
   
-  <link rel="icon" href="data:image/svg+xml,%26lt%3Bsvg%20xmlns%3D%26%2339%3Bhttp%3A//www.w3.org/2000/svg%26%2339%3B%20viewBox%3D%26%2339%3B0%200%2064%2064%26%2339%3B%26gt%3B%26lt%3Brect%20width%3D%26%2339%3B64%26%2339%3B%20height%3D%26%2339%3B64%26%2339%3B%20rx%3D%26%2339%3B14%26%2339%3B%20fill%3D%26%2339%3B%2324417A%26%2339%3B/%26gt%3B%26lt%3Btext%20x%3D%26%2339%3B32%26%2339%3B%20y%3D%26%2339%3B44%26%2339%3B%20font-size%3D%26%2339%3B34%26%2339%3B%20font-family%3D%26%2339%3BArial%26%2339%3B%20font-weight%3D%26%2339%3B700%26%2339%3B%20fill%3D%26%2339%3B%23fff%26%2339%3B%20text-anchor%3D%26%2339%3Bmiddle%26%2339%3B%26gt%3BM%26lt%3B/text%26gt%3B%26lt%3B/svg%26gt%3B">
-  <link rel="stylesheet" href="estilos.css?v=fd2e2d240f">
+  <link rel="icon" href="data:image/svg+xml,%26lt%3Bsvg%20xmlns%3D%26%2339%3Bhttp%3A//www.w3.org/2000/svg%26%2339%3B%20viewBox%3D%26%2339%3B0%200%2064%2064%26%2339%3B%26gt%3B%26lt%3Brect%20width%3D%26%2339%3B64%26%2339%3B%20height%3D%26%2339%3B64%26%2339%3B%20rx%3D%26%2339%3B14%26%2339%3B%20fill%3D%26%2339%3B%23151515%26%2339%3B/%26gt%3B%26lt%3Btext%20x%3D%26%2339%3B32%26%2339%3B%20y%3D%26%2339%3B44%26%2339%3B%20font-size%3D%26%2339%3B34%26%2339%3B%20font-family%3D%26%2339%3BGeorgia%26%2339%3B%20font-weight%3D%26%2339%3B700%26%2339%3B%20fill%3D%26%2339%3B%23f0c9a8%26%2339%3B%20text-anchor%3D%26%2339%3Bmiddle%26%2339%3B%26gt%3BM%26lt%3B/text%26gt%3B%26lt%3B/svg%26gt%3B">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css?v=536924c9b1">
 </head>
 <body>
-  <header class="top">
-    <div class="wrap top-in">
-      <a class="brand" href="./">Mi Tienda de Ropa</a>
-      <button class="cart-btn" type="button" data-open-cart aria-label="Ver mi pedido">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-        <span>Mi pedido</span>
-        <b data-cart-count hidden>0</b>
+
+  
+
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <button class="icon-btn burger" id="burgerBtn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
+
+      <a href="#inicio" class="logo">Mi Tienda de Ropa</a>
+
+      <nav class="nav" id="nav">
+        <a href="#inicio">Inicio</a>
+        <span id="navCats" class="nav__cats"></span>
+        <a href="#tienda" data-filter-cat="all">Ver todo</a>
+        <a href="#faq">Ayuda</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="icon-btn" id="searchToggle" aria-label="Buscar">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button class="icon-btn" id="ordersBtn" aria-label="Mis pedidos" title="Mis pedidos">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
+        <button class="icon-btn" id="wishBtn" aria-label="Favoritos" title="Favoritos">
+          <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <span class="badge-count" id="wishCount" hidden>0</span>
+        </button>
+        <button class="icon-btn" id="cartBtn" aria-label="Carrito">
+          <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="badge-count" id="cartCount" hidden>0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="searchbar" id="searchbar">
+      <div class="container">
+        <input type="search" id="searchInput" placeholder="Buscar polos, casacas, diseños..." autocomplete="off" aria-label="Buscar">
+      </div>
     </div>
   </header>
 
-  <section class="hero">
-    <div class="wrap">
-      <h1>Mi Tienda de Ropa</h1>
-      
-      <p class="how">Elige tus prendas, arma tu pedido y envíalo por WhatsApp. Te respondemos para coordinar el pago y la entrega.</p>
-      <label class="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" placeholder="Buscar polos, casacas, diseños…" data-search aria-label="Buscar en el catálogo">
-      </label>
-    </div>
-  </section>
-
-  <main class="wrap">
-    <div class="toolbar">
-      <div class="chips" data-cats role="tablist" aria-label="Categorías"></div>
-      <div class="tools">
-        <label class="check"><input type="checkbox" data-only-available> Solo disponibles</label>
-        <select data-sort aria-label="Ordenar">
-          <option value="nuevos">Más nuevos</option>
-          <option value="precio_asc">Precio: menor a mayor</option>
-          <option value="precio_desc">Precio: mayor a menor</option>
-          <option value="nombre">Nombre (A-Z)</option>
-        </select>
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero__overlay"></div>
+      <div class="container hero__content">
+        <span class="eyebrow">Mi Tienda de Ropa</span>
+        <h1>Viste tu mejor<br><em>versión</em></h1>
+        <p>Elige tus prendas, arma tu pedido y envíalo por WhatsApp.</p>
+        <div class="hero__cta">
+          <a href="#tienda" class="btn btn--light">Comprar ahora</a>
+          <a href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta." target="_blank" rel="noopener" class="btn btn--ghost">Escríbenos</a>
+        </div>
       </div>
-    </div>
-    <p class="result-count" data-count></p>
-    <div class="grid" data-grid><p class="empty">Cargando catálogo…</p></div>
+    </section>
+
+    <section class="perks">
+      <div class="container perks__grid">
+        <div class="perk"><span>💬</span><div><strong>Pide por WhatsApp</strong><small>Te respondemos directo</small></div></div>
+        <div class="perk"><span>📦</span><div><strong>Stock real</strong><small>Ves lo que hay disponible</small></div></div>
+        <div class="perk"><span>🛵</span><div><strong>Recojo o delivery</strong><small>Lo coordinamos contigo</small></div></div>
+        <div class="perk"><span>💳</span><div><strong>Paga como prefieras</strong><small>Yape, Plin, transferencia o efectivo</small></div></div>
+      </div>
+    </section>
+
+    <section class="section container" id="categorias" hidden>
+      <div class="section__head"><h2>Compra por categoría</h2></div>
+      <div class="categories" id="categoryCards"></div>
+    </section>
+
+    <section class="section container" id="tienda">
+      <div class="section__head">
+        <h2>Tienda</h2>
+        <p class="muted" id="resultsCount"></p>
+      </div>
+
+      <div class="shop">
+        <aside class="filters" id="filters">
+          <div class="filters__head">
+            <h3>Filtros</h3>
+            <button class="icon-btn filters__close" id="filtersClose" aria-label="Cerrar filtros">✕</button>
+          </div>
+          <div class="filter-group">
+            <h4>Categoría</h4>
+            <div id="catFilters"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Color</h4>
+            <div class="color-filters" id="colorFilters"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Talla</h4>
+            <div class="size-chips" id="sizeFilters"></div>
+          </div>
+          <div class="filter-group">
+            <h4>Precio máximo: <span id="priceLabel"></span></h4>
+            <input type="range" id="priceRange" min="0" step="1" aria-label="Precio máximo">
+          </div>
+          <div class="filter-group">
+            <label><input type="checkbox" id="availableOnly"> Solo disponibles</label>
+          </div>
+          <button class="btn btn--outline btn--block" id="clearFilters">Limpiar filtros</button>
+        </aside>
+
+        <div class="shop__main">
+          <div class="toolbar">
+            <button class="btn btn--outline btn--sm filters-toggle" id="filtersToggle">☰ Filtros</button>
+            <div class="active-filters" id="activeFilters"></div>
+            <select id="sortSelect" aria-label="Ordenar">
+              <option value="featured">Más nuevos</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+              <option value="name">Nombre A–Z</option>
+            </select>
+          </div>
+          <div class="grid" id="productGrid"><p class="muted">Cargando catálogo…</p></div>
+          <div class="empty" id="emptyState" hidden>
+            <p id="emptyText">😕 No encontramos productos con esos filtros.</p>
+            <button class="btn btn--dark" id="emptyClear">Ver todos los productos</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="promo">
+      <div class="container promo__inner">
+        <div>
+          <h2>¿Buscas algo en especial?</h2>
+          <p>Pregúntanos por tallas, colores o modelos que no veas aquí. Te respondemos por WhatsApp.</p>
+        </div>
+        <a class="btn btn--light" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20estoy%20buscando..." target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>
+      </div>
+    </section>
+
+    <section class="section container" id="faq">
+      <div class="section__head"><h2>Preguntas frecuentes</h2></div>
+      <div class="faq">
+        <details><summary>¿Cómo hago un pedido?</summary><p>Elige tus prendas, color y talla, y agrégalas al carrito. Pulsa «Finalizar compra», completa tus datos y envía el pedido por WhatsApp. Te respondemos para confirmar la disponibilidad, el pago y la entrega.</p></details>
+        <details><summary>¿Cuáles son los métodos de pago?</summary><p>Yape, Plin, transferencia bancaria o efectivo. Coordinamos el pago contigo por WhatsApp al confirmar tu pedido.</p></details>
+        <details><summary>¿Hacen delivery?</summary><p>Sí, puedes elegir delivery o recojo en tienda al finalizar tu compra. El costo y el tiempo de entrega dependen de tu distrito y te los confirmamos por WhatsApp.</p></details>
+        <details><summary>¿El stock que veo es real?</summary><p>Sí, la web se actualiza desde nuestro inventario. Si una talla aparece tachada es porque se agotó. Igual confirmamos cada pedido antes de cobrar.</p></details>
+        <details><summary>¿Puedo cambiar una prenda?</summary><p>Escríbenos por WhatsApp con tu pedido y te indicamos las opciones de cambio.</p></details>
+      </div>
+    </section>
+
+    <section class="section container" id="contacto">
+      <div class="section__head"><h2>Contacto</h2></div>
+      <div class="contact">
+        <div class="contact__info">
+          <p>¿Tienes dudas? Escríbenos y te responderemos lo antes posible.</p>
+          <ul>
+            
+            
+            <li>💬 WhatsApp: +51931025288</li>
+          </ul>
+          <a class="btn btn--whatsapp" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta." target="_blank" rel="noopener">💬 Escríbenos por WhatsApp</a>
+        </div>
+        <form class="contact__form" id="contactForm" novalidate>
+          <input name="name" required placeholder="Nombre" autocomplete="name">
+          <textarea name="message" required rows="5" placeholder="¿En qué podemos ayudarte?"></textarea>
+          <button class="btn btn--dark" type="submit">Enviar mensaje por WhatsApp</button>
+        </form>
+      </div>
+    </section>
   </main>
 
-  <footer class="foot">
-    <div class="wrap foot-in">
+  <footer class="footer">
+    <div class="container footer__grid">
       <div>
-        <strong>Mi Tienda de Ropa</strong>
+        <a class="logo logo--light" href="#inicio">Mi Tienda de Ropa</a>
         
-        
+        <div class="social">
+          
+          
+          
+          <a href="https://wa.me/51931025288" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
+        </div>
       </div>
-      <div class="social">
-        
-        
-        
-        <a href="https://wa.me/51931025288" target="_blank" rel="noopener">WhatsApp</a>
+      <div>
+        <h4>Tienda</h4>
+        <div id="footerCats"></div>
+        <a href="#tienda" data-filter-cat="all">Ver todo</a>
+      </div>
+      <div>
+        <h4>Ayuda</h4>
+        <a href="#faq">Preguntas frecuentes</a>
+        <a href="#" data-legal="pedidos">Pedidos y entregas</a>
+        <a href="#" data-legal="terminos">Términos y condiciones</a>
+        <a href="#" data-legal="privacidad">Política de privacidad</a>
+      </div>
+      <div>
+        <h4>Pagos aceptados</h4>
+        <div class="payments"><span>Yape</span><span>Plin</span><span>Transferencia</span><span>Efectivo</span></div>
       </div>
     </div>
-    <p class="wrap updated" data-updated></p>
+    <div class="container footer__bottom">
+      <small>© <span id="year"></span> Mi Tienda de Ropa. Todos los derechos reservados. <span id="updated"></span></small>
+    </div>
   </footer>
 
   <a class="wa-float" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta."
@@ -80,36 +228,48 @@
     <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.6a10.6 10.6 0 0 1-5.4-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.6 10.6 0 1 1 16 26.6Zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.4 3.4 14.6 14.6 0 0 0 5.6 4.9c2.1.9 2.9 1 4 .8.6-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4Z"/></svg>
   </a>
 
-  <dialog class="product" data-product aria-label="Detalle de la prenda"></dialog>
+  <div class="overlay" id="overlay"></div>
 
-  <div class="overlay" data-overlay hidden></div>
-  <aside class="drawer" data-cart aria-label="Mi pedido" hidden>
-    <div class="drawer-head">
-      <h2>Mi pedido</h2>
-      <button class="icon-btn" type="button" data-close-cart aria-label="Cerrar">✕</button>
+  <aside class="drawer" id="cartDrawer" aria-label="Carrito">
+    <div class="drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="icon-btn" data-close aria-label="Cerrar">✕</button>
     </div>
-    <div class="drawer-body" data-cart-items></div>
-    <form class="drawer-foot" data-order>
-      <div class="total"><span>Total</span><strong data-cart-total>—</strong></div>
-      <label>Tu nombre<input name="nombre" maxlength="60" autocomplete="name" required></label>
-      <label>Entrega
-        <select name="entrega" data-delivery>
-          <option value="Recojo en tienda">Recojo en tienda</option>
-          <option value="Delivery">Delivery</option>
-        </select>
-      </label>
-      <label data-address hidden>Dirección y distrito<input name="direccion" maxlength="140" autocomplete="street-address"></label>
-      <label>Comentario (opcional)<textarea name="nota" rows="2" maxlength="300" placeholder="Ej.: ¿tienen en otro color?"></textarea></label>
-      <button class="btn-wa" type="submit">Enviar pedido por WhatsApp</button>
-      <button class="btn-link" type="button" data-clear-cart>Vaciar pedido</button>
-      <p class="hint">El pedido se confirma por WhatsApp según disponibilidad. Los precios están en soles.</p>
-    </form>
+    <div class="drawer__body" id="cartItems"></div>
+    <div class="drawer__foot" id="cartFoot">
+      <div class="totals" id="cartTotals"></div>
+      <button class="btn btn--dark btn--block" id="checkoutBtn">Finalizar compra</button>
+      <button class="btn btn--link btn--block" data-close>Seguir comprando</button>
+    </div>
   </aside>
 
-  <div class="toast" data-toast role="status" aria-live="polite"></div>
-  <noscript><p class="wrap empty">Para ver el catálogo activa JavaScript en tu navegador.</p></noscript>
+  <aside class="drawer" id="wishDrawer" aria-label="Favoritos">
+    <div class="drawer__head">
+      <h3>Favoritos</h3>
+      <button class="icon-btn" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="drawer__body" id="wishItems"></div>
+  </aside>
 
-  <script>window.TIENDA = {catalogo: "catalogo.json?v=5411eb24b1"};</script>
-  <script src="tienda.js?v=6b7815364d" defer></script>
+  <aside class="drawer" id="ordersDrawer" aria-label="Mis pedidos">
+    <div class="drawer__head">
+      <h3>Mis pedidos</h3>
+      <button class="icon-btn" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="drawer__body" id="ordersList"></div>
+  </aside>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal__box" id="modalBox">
+      <button class="icon-btn modal__close" data-close aria-label="Cerrar">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <noscript><p class="container empty">Para ver el catálogo activa JavaScript en tu navegador.</p></noscript>
+
+  <script>window.TIENDA = {catalogo: "catalogo.json?v=d3aa4d8880"};</script>
+  <script src="tienda.js?v=87532a9791" defer></script>
 </body>
 </html>
