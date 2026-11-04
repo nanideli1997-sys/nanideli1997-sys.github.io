@@ -7,12 +7,14 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s = "") => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const safeHex = (h) => (/^#[0-9a-f]{3,8}$/i.test(h || "") ? h : "#cccccc");
+  const D = window.DulceDatos;
+  const safeHex = D.hex;
   const ls = {
-    get: (k, d) => { try { return JSON.parse(localStorage.getItem("tienda_" + k)) ?? d; } catch { return d; } },
-    set: (k, v) => { try { localStorage.setItem("tienda_" + k, JSON.stringify(v)); } catch { /* modo privado */ } }
+    get: (k, d) => { try { const raw = localStorage.getItem("dulcenani_v3_" + k); if (raw && raw.length > 524288) { localStorage.removeItem("dulcenani_v3_" + k); return d; } return JSON.parse(raw) ?? d; } catch { return d; } },
+    set: (k, v) => { try { localStorage.setItem("dulcenani_v3_" + k, JSON.stringify(v)); } catch { /* modo privado */ } }
   };
   const CATALOGO = document.currentScript.dataset.catalogo;
+  const WHATSAPP = D.phone(document.currentScript.dataset.whatsapp);
   const MAX_QTY = 10;
   const NEW_DAYS = 15;
   const money = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
@@ -42,9 +44,9 @@
 
   // Imagen de respaldo si no hay foto o una foto no carga
   function placeholder(text = "") {
-    const t = esc(text).slice(0, 22);
+    const t = esc(D.text(text, 22));
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#efe6dc"/><stop offset="1" stop-color="#d9c2ad"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" font-family="Georgia" font-size="64" text-anchor="middle" fill="#8f5536">👕</text><text x="50%" y="58%" font-family="Arial" font-size="30" text-anchor="middle" fill="#6f6a64">${t}</text></svg>`);
+      `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0f5"/><stop offset="1" stop-color="#ddc8ec"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/><text x="50%" y="48%" font-family="Georgia" font-size="64" text-anchor="middle" fill="#704c48">👕</text><text x="50%" y="58%" font-family="Arial" font-size="30" text-anchor="middle" fill="#7e6964">${t}</text></svg>`);
   }
   document.addEventListener("error", (e) => {
     const img = e.target;
@@ -66,16 +68,29 @@
 
   /* ---------- Paneles y modales ---------- */
   const overlay = $("#overlay");
+  let modalReturn = null;
+  function restoreModal() {
+    const saved = modalReturn;
+    modalReturn = null;
+    $("#modalContent").replaceChildren(...saved.nodes);
+    $("#modalBox").className = saved.className;
+    $("#modalBox").scrollTop = saved.scrollTop;
+    saved.focus?.focus({ preventScroll: true });
+  }
   function lock() { document.body.classList.add("lock"); overlay.classList.add("show"); }
   function closeAll() {
+    if (modalReturn) { restoreModal(); return; }
+    $("#burgerBtn").setAttribute("aria-expanded", "false");
     $$(".drawer.open, .nav.open, .filters.open").forEach((d) => d.classList.remove("open"));
     if ($("#modal").classList.contains("open") && location.hash.startsWith("#p=")) history.replaceState(null, "", location.pathname + location.search);
     $("#modal").classList.remove("open");
     overlay.classList.remove("show");
     document.body.classList.remove("lock");
   }
-  function openDrawer(id) { closeAll(); $(id).classList.add("open"); lock(); }
+  function openDrawer(id) { modalReturn = null; closeAll(); $(id).classList.add("open"); lock(); }
   function openModal(html, size = "") {
+    modalReturn = null;
+    $("#burgerBtn").setAttribute("aria-expanded", "false");
     $$(".drawer.open, .nav.open, .filters.open").forEach((d) => d.classList.remove("open"));
     $("#modalContent").innerHTML = html;
     $("#modalBox").className = "modal__box " + size;
@@ -223,32 +238,72 @@
   const priceHTML = (p) => minPrice(p) === maxPrice(p)
     ? `<strong>${fmt(minPrice(p))}</strong>` : `<small>Desde</small><strong>${fmt(minPrice(p))}</strong>`;
 
+  const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function cardPhotos(p) {
+    const seen = new Set();
+    const photos = p.images.filter((image) => image.src && !seen.has(image.src) && seen.add(image.src));
+    return photos.length ? photos : [{ src: placeholder(p.name), mini: placeholder(p.name) }];
+  }
   function productCard(p, i) {
     const st = status(p);
     const badge = st === "agotado" ? `<span class="card__badge card__badge--agotado">Agotado</span>`
       : st === "pocas" ? `<span class="card__badge card__badge--pocas">Últimas unidades</span>`
       : isNew(p) ? `<span class="card__badge card__badge--nuevo">Nuevo</span>` : "";
-    const id = esc(p.id);
+    const id = esc(p.id), photos = cardPhotos(p), saved = wish.includes(p.id);
     return `
       <article class="card ${st === "agotado" ? "card--soldout" : ""}" style="animation-delay:${Math.min(i, 8) * 40}ms">
-        <div class="card__media" data-open="${id}">
-          <img src="${esc(coverOf(p))}" alt="${esc(p.name)}" loading="lazy">
+        <div class="card__media ${photos.length > 1 ? "card__media--gallery" : ""}">
+          <div class="card__gallery" data-card-gallery role="group" aria-label="Fotos de ${esc(p.name)}">
+            ${photos.map((photo, n) => `<button type="button" class="card__open" data-open="${id}" aria-label="Ver ${esc(p.name)}, foto ${n + 1}"><img src="${esc(photo.mini || photo.src)}" alt="${esc(p.name)} · foto ${n + 1}" loading="lazy" draggable="false"></button>`).join("")}
+          </div>
           ${badge}
-          <button class="card__wish ${wish.includes(p.id) ? "active" : ""}" data-wish="${id}" aria-label="Favorito">${heart}</button>
-          <button class="card__quick" data-open="${id}">Vista rápida</button>
+          <button type="button" class="card__wish ${saved ? "active" : ""}" data-wish="${id}" aria-label="${saved ? "Quitar de" : "Guardar en"} favoritos: ${esc(p.name)}" aria-pressed="${saved}">${heart}</button>
+          <button type="button" class="card__quick" data-open="${id}">Elegir mi talla <span aria-hidden="true">↗</span></button>
+          ${photos.length > 1 ? `<div class="card__photo-dots" aria-label="Elegir foto">${photos.map((_, n) => `<button type="button" data-photo="${n}" aria-label="Ver foto ${n + 1}" aria-pressed="${n === 0}"></button>`).join("")}</div>` : ""}
         </div>
         <div class="card__body">
           <div class="card__type">${esc(p.category)}${p.design ? " · " + esc(p.design) : ""}</div>
-          <h3 class="card__name" data-open="${id}">${esc(p.name)}</h3>
+          <h3 class="card__name"><button type="button" data-open="${id}">${esc(p.name)}</button></h3>
           <div class="price">${priceHTML(p)}</div>
-          <div class="swatches">${colorsOf(p).map((c) => `<span class="swatch-dot" style="background:${c.hex}" title="${esc(c.name)}"></span>`).join("")}</div>
+          <div class="card__colors"><span class="card__label">Colores</span><div class="swatches">${colorsOf(p).map((c) => `<span class="swatch-dot" style="background:${c.hex}" role="img" aria-label="${esc(c.name)}" title="${esc(c.name)}"></span>`).join("")}</div><span class="card__color-names">${colorsOf(p).map((c) => esc(c.name)).join(" · ")}</span></div>
+          <div class="card__sizes" role="group" aria-label="Tallas disponibles"><span class="card__label">Tallas</span>${sizesOf(p).map((size) => { const available = p.variants.some((x) => x.size === size && x.stock !== "agotado"); return `<span class="card__size ${available ? "" : "card__size--soldout"}" aria-label="${esc(size)}${available ? " disponible" : " agotada"}">${esc(size)}</span>`; }).join("")}</div>
+          <button type="button" class="card__choose" data-open="${id}">${st === "agotado" ? "Ver prenda" : "Ver detalles y elegir"}<span aria-hidden="true">↗</span></button>
         </div>
       </article>`;
+  }
+
+  function bindCardGalleries() {
+    $$("[data-card-gallery]").forEach((gallery) => {
+      if (gallery.dataset.bound) return;
+      gallery.dataset.bound = "1";
+      const card = gallery.closest(".card"), count = gallery.children.length;
+      if (count < 2) return;
+      const move = (index) => gallery.scrollTo({ left: gallery.clientWidth * index, behavior: reduceMotion() ? "auto" : "smooth" });
+      card.querySelector(".card__photo-dots").addEventListener("click", (e) => {
+        const button = e.target.closest("[data-photo]");
+        if (button) move(+button.dataset.photo);
+      });
+      gallery.addEventListener("scroll", () => {
+        const index = Math.round(gallery.scrollLeft / gallery.clientWidth);
+        $$("[data-photo]", card).forEach((button, n) => button.setAttribute("aria-pressed", String(n === index)));
+      }, { passive: true });
+      card.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) move(1); });
+      card.addEventListener("mouseleave", () => { if (matchMedia("(hover: hover)").matches) move(0); });
+    });
+  }
+  function renderNewArrivals() {
+    const products = [...PRODUCTS].filter((p) => status(p) !== "agotado")
+      .sort((a, b) => (Date.parse(b.created) || 0) - (Date.parse(a.created) || 0)).slice(0, 4);
+    $("#novedades").hidden = !products.length;
+    $("#newArrivalsGrid").classList.toggle("new-arrivals__grid--single", products.length === 1);
+    $("#newArrivalsGrid").innerHTML = products.map(productCard).join("");
+    bindCardGalleries();
   }
 
   function renderGrid() {
     const list = getFiltered();
     $("#productGrid").innerHTML = list.map(productCard).join("");
+    bindCardGalleries();
     $("#emptyState").hidden = list.length > 0;
     $("#emptyText").textContent = PRODUCTS.length ? "😕 No encontramos productos con esos filtros." : "Pronto publicaremos nuestras prendas. ¡Vuelve pronto!";
     $("#emptyClear").hidden = !PRODUCTS.length;
@@ -273,7 +328,7 @@
 
     openModal(`
       <div class="pdp">
-        <div class="pdp__img"><div class="main" id="pdpMain"></div><div class="pdp-thumbs" id="pdpThumbs"></div></div>
+        <div class="pdp__img"><div class="main" id="pdpMain"></div><div class="pdp__photo-nav" id="pdpPhotoNav" hidden><button type="button" class="icon-btn" id="pdpPrev" aria-label="Foto anterior">←</button><span id="pdpPhotoCount" aria-live="polite"></span><button type="button" class="icon-btn" id="pdpNext" aria-label="Foto siguiente">→</button></div><div class="pdp-thumbs" id="pdpThumbs"></div></div>
         <div class="pdp__info">
           <div class="card__type">${esc(p.category)}${p.brand ? " · " + esc(p.brand) : ""}</div>
           <h2>${esc(p.name)}</h2>
@@ -307,6 +362,8 @@
       const imgs = imagesFor(p, sel.color);
       sel.img = Math.min(sel.img, Math.max(imgs.length - 1, 0));
       $("#pdpMain", box).innerHTML = `<img src="${esc(imgs.length ? imgs[sel.img].src : placeholder(p.name))}" alt="${esc(p.name + " " + sel.color)}">`;
+      $("#pdpPhotoNav", box).hidden = imgs.length < 2;
+      $("#pdpPhotoCount", box).textContent = `${sel.img + 1} / ${Math.max(imgs.length, 1)}`;
       $("#pdpThumbs", box).innerHTML = imgs.length > 1 ? imgs.map((im, i) =>
         `<button class="${i === sel.img ? "active" : ""}" data-img="${i}" aria-label="Foto ${i + 1}"><img src="${esc(im.mini)}" alt=""></button>`).join("") : "";
       $$(".color-opt", box).forEach((b) => b.classList.toggle("active", b.dataset.color === sel.color));
@@ -341,6 +398,24 @@
       if (!v || v.stock === "agotado") sel.size = null;
       update();
     });
+    const movePhoto = (delta) => {
+      const count = imagesFor(p, sel.color).length;
+      if (count > 1) { sel.img = (sel.img + delta + count) % count; update(); }
+    };
+    $("#pdpPrev", box).addEventListener("click", () => movePhoto(-1));
+    $("#pdpNext", box).addEventListener("click", () => movePhoto(1));
+    let swipeStart = null;
+    $("#pdpMain", box).addEventListener("touchstart", (e) => {
+      swipeStart = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+    }, { passive: true });
+    $("#pdpMain", box).addEventListener("touchend", (e) => {
+      if (!swipeStart || !e.changedTouches.length) return;
+      const dx = e.changedTouches[0].clientX - swipeStart.x;
+      const dy = e.changedTouches[0].clientY - swipeStart.y;
+      swipeStart = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) movePhoto(dx < 0 ? 1 : -1);
+    }, { passive: true });
+    $("#pdpMain", box).addEventListener("touchcancel", () => { swipeStart = null; }, { passive: true });
     $("#pdpThumbs", box).addEventListener("click", (e) => {
       const b = e.target.closest("[data-img]"); if (!b) return;
       sel.img = +b.dataset.img; update();
@@ -369,9 +444,10 @@
   }
 
   function share(p) {
-    const url = location.href.split("#")[0] + `#p=${encodeURIComponent(p.id)}`;
+    const link = new URL(location.href); link.search = ""; link.hash = `p=${encodeURIComponent(p.id)}`;
+    const url = link.href;
     if (navigator.share) navigator.share({ title: p.name, url }).catch(() => {});
-    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast("Enlace copiado", "success"));
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast("Enlace copiado", "success")).catch(() => toast("No se pudo copiar el enlace"));
   }
 
   function showSizeGuide() {
@@ -398,7 +474,21 @@
     if (wish.includes(id)) { wish = wish.filter((x) => x !== id); toast("Eliminado de favoritos"); }
     else { wish.push(id); toast(`❤️ ${p.name} añadido a favoritos`); }
     ls.set("wish", wish);
-    $$("[data-wish]").forEach((b) => { if (b.dataset.wish === id) b.classList.toggle("active", wish.includes(id)); });
+    $$("[data-wish]").forEach((b) => {
+      if (b.dataset.wish !== id) return;
+      const saved = wish.includes(id);
+      b.classList.toggle("active", saved);
+      if (b.classList.contains("card__wish")) {
+        b.setAttribute("aria-pressed", String(saved));
+        b.setAttribute("aria-label", `${saved ? "Quitar de" : "Guardar en"} favoritos: ${p.name}`);
+        b.classList.remove("wish-pop");
+        if (saved && !reduceMotion()) {
+          void b.offsetWidth;
+          b.classList.add("wish-pop");
+          setTimeout(() => b.classList.remove("wish-pop"), 450);
+        }
+      }
+    });
     renderWish();
   }
   function renderWish() {
@@ -417,7 +507,10 @@
 
   /* ---------- Carrito ---------- */
   function addToCart(sku, qty = 1) {
-    const { p, v } = BY_SKU.get(sku);
+    const entry = BY_SKU.get(sku);
+    if (!entry || entry.v.stock === "agotado" || !Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) return false;
+    const { p, v } = entry;
+    if (cart.length >= D.LIMIT.cart && !cart.some((i) => i.sku === sku)) { toast("Para un pedido más grande, escríbenos por WhatsApp"); return false; }
     const item = cart.find((i) => i.sku === sku);
     const current = item ? item.qty : 0;
     if (current + qty > MAX_QTY) { toast(`Máximo ${MAX_QTY} unidades por prenda. Para más, escríbenos por WhatsApp.`, "error"); return false; }
@@ -470,6 +563,7 @@
     if (q) {
       const item = cart.find((i) => i.sku === q.dataset.sku);
       const d = +q.dataset.cq;
+      if (!item || ![-1, 1].includes(d)) return;
       if (d > 0 && item.qty >= MAX_QTY) return toast(`Máximo ${MAX_QTY} unidades por prenda`, "error");
       item.qty += d;
       if (item.qty <= 0) cart = cart.filter((i) => i !== item);
@@ -484,7 +578,7 @@
   function openCheckout() {
     if (!cart.length) return;
     const t = calcTotals();
-    const saved = ls.get("customer", {});
+    const saved = D.savedCustomer(ls.get("customer", {}));
     const v = (k) => esc(saved[k] || "");
     openModal(`
       <div class="checkout">
@@ -494,7 +588,7 @@
           <label class="lbl">Datos de contacto</label>
           <div class="row">
             <input name="name" placeholder="Nombre y apellidos *" required value="${v("name")}" autocomplete="name" maxlength="80">
-            <input name="phone" type="tel" placeholder="Celular *" required pattern="[0-9+\\s()-]{7,}" value="${v("phone")}" autocomplete="tel" maxlength="20">
+            <input name="phone" type="tel" placeholder="Celular *" required pattern="[+0-9\\s\\(\\)\\-]{7,20}" value="${v("phone")}" autocomplete="tel" maxlength="20">
           </div>
           <label class="lbl">Entrega</label>
           <div class="pay-opts">
@@ -535,8 +629,11 @@
 
   function validate(form) {
     let ok = true;
-    $$("input[required], textarea[required]", form).forEach((el) => {
-      const valid = el.type === "checkbox" ? el.checked : el.checkValidity() && el.value.trim() !== "";
+    const limits = { name: 80, phone: 20, address: 140, district: 60, notes: 300, message: 2000 };
+    $$("input, textarea", form).forEach((el) => {
+      const phoneValid = el.name !== "phone" || (/^[+0-9\s()-]{7,20}$/.test(el.value.trim()) && el.value.replace(/\D/g, "").length >= 7);
+      const valid = el.type === "checkbox" ? (!el.required || el.checked) :
+        el.checkValidity() && (!el.required || el.value.trim() !== "") && phoneValid && (!limits[el.name] || el.value.length <= limits[el.name]);
       el.classList.toggle("invalid", !valid);
       if (!valid) ok = false;
     });
@@ -551,18 +648,22 @@
       $(".invalid", form)?.focus();
       return;
     }
+    if (!cart.length) return;
     const d = Object.fromEntries(new FormData(form));
-    const customer = { name: d.name.trim(), phone: d.phone.trim(), delivery: d.delivery, payment: d.payment,
-                       address: (d.address || "").trim(), district: (d.district || "").trim() };
-    ls.set("customer", customer);
+    const customer = { name: D.text(d.name, 80), phone: D.text(d.phone, 20), delivery: d.delivery, payment: d.payment,
+                       address: D.text(d.address, 140), district: D.text(d.district, 60) };
+    const validCustomer = D.customer(customer);
+    if (!validCustomer) { toast("Revisa tus datos de contacto y entrega", "error"); return; }
+    Object.assign(customer, validCustomer);
+    ls.set("customer", { ...customer, savedAt: Date.now() });
     const order = {
-      id: "W-" + Date.now().toString(36).toUpperCase().slice(-6),
+      id: "W-" + Date.now().toString(36).toUpperCase() + "-" + Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase(),
       date: new Date().toISOString(),
-      customer, notes: (d.notes || "").trim(), status: "Enviado por WhatsApp",
+      customer, notes: D.text(d.notes, 300, true), status: "Listo para enviar",
       total: calcTotals().total,
       items: cart.map((i) => { const { p, v } = BY_SKU.get(i.sku); return { id: p.id, sku: v.sku, name: p.name, size: v.size, color: v.color, qty: i.qty, price: v.price }; })
     };
-    const orders = ls.get("orders", []);
+    const orders = D.orders(ls.get("orders", []));
     orders.unshift(order);
     ls.set("orders", orders.slice(0, 20));
     cart = []; saveCart(); renderOrders();
@@ -570,55 +671,92 @@
   }
 
   function orderText(o) {
-    const lines = o.items.map((i) => `• ${i.qty}x ${i.name} (${i.id}) – Talla ${i.size}, ${i.color} – ${fmt(i.price * i.qty)}`).join("\n");
+    // Unicode explícito para conservar los emojis al guardar el archivo.
+    const icon = {
+      order: "\u{1F6CD}\uFE0F", products: "\u{1F455}", code: "\u{1F3F7}\uFE0F",
+      size: "\u{1F4CF}", color: "\u{1F3A8}", quantity: "\u{1F522}", subtotal: "\u{1F9FE}",
+      total: "\u{1F4B0}", delivery: "\u{1F69A}", pickup: "\u{1F3EC}", cost: "\u{1F4B5}",
+      customer: "\u{1F464}", phone: "\u{1F4DE}", address: "\u{1F4CD}",
+      district: "\u{1F5FA}\uFE0F", payment: "\u{1F4B3}", notes: "\u{1F4DD}"
+    };
+    const amount = (cents) => fmt(cents).replace(/[\u00a0\u202f]/g, " ");
     const c = o.customer;
-    return `Hola ${STORE.name}, quiero hacer este pedido:\n\n🛍️ *PEDIDO ${o.id}*\n${lines}\n\n*TOTAL: ${fmt(o.total)}*\n\n` +
-      `👤 ${c.name}\n📞 ${c.phone}\n🚚 ${c.delivery}` +
-      (c.delivery === "Delivery" ? `\n📍 ${c.address}, ${c.district}` : "") +
-      `\n💳 Pago: ${c.payment}` + (o.notes ? `\n📝 ${o.notes}` : "") + `\n\n(Pedido desde la página web)`;
+    const products = o.items.map((item, index) => [
+      `${index + 1}. ${item.name}`,
+      `   ${icon.code} Código: ${item.id}`,
+      `   ${icon.size} Talla: ${item.size} | ${icon.color} Color: ${item.color}`,
+      `   ${icon.quantity} Cantidad: ${item.qty} | ${icon.subtotal} Subtotal: ${amount(item.price * item.qty)}`,
+      ...(item.qty > 1 ? [`   ${icon.cost} Precio unitario: ${amount(item.price)}`] : [])
+    ].join("\n")).join("\n\n");
+    return [
+      `Hola ${STORE.name}, quisiera confirmar este pedido.`,
+      "",
+      `${icon.order} PEDIDO ${o.id}`,
+      "",
+      `${icon.products} PRODUCTOS`,
+      products,
+      "",
+      `${icon.total} Total de productos: ${amount(o.total)}`,
+      `${c.delivery === "Delivery" ? icon.delivery : icon.pickup} Entrega: ${c.delivery}`,
+      ...(c.delivery === "Delivery" ? [`${icon.cost} Costo de delivery: por confirmar según el distrito.`] : []),
+      "",
+      `${icon.customer} DATOS DEL CLIENTE`,
+      `${icon.customer} Nombre: ${c.name}`,
+      `${icon.phone} Celular: ${c.phone}`,
+      ...(c.delivery === "Delivery" ? [`${icon.address} Dirección: ${c.address}`, `${icon.district} Distrito: ${c.district}`] : []),
+      `${icon.payment} Pago: ${c.payment}`,
+      ...(o.notes ? [`${icon.notes} Comentario: ${o.notes}`] : []),
+      "",
+      "Por favor, confírmenme disponibilidad, entrega y total final.",
+      `Pedido generado desde la web de ${STORE.name}.`
+    ].join("\n");
   }
-  const waLink = (o) => `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(orderText(o))}`;
 
+  // Un enlace universal: WhatsApp gestiona la apertura según el equipo.
+  // Se usa el destino completo para evitar el salto adicional del enlace corto.
+  const waLink = (o) => `https://api.whatsapp.com/send?phone=${STORE.whatsapp}&text=${encodeURIComponent(orderText(o))}`;
   function showSuccess(o) {
     openModal(`
-      <div class="success">
-        <div class="check">✓</div>
-        <h2>¡Gracias, ${esc(o.customer.name.split(" ")[0])}!</h2>
-        <p class="muted">Tu pedido está listo para enviar.</p>
+      <div class="success success--nani">
+        <img class="success__mascot" src="img/conejito-contacto.webp" width="1362" height="1155" alt="">
+        <span class="section-kicker">GRACIAS, ${esc(o.customer.name.split(" ")[0])}</span>
+        <h2>¡Tus favoritos están listos para pedir!</h2>
+        <p class="muted">Un último pasito y lo coordinamos contigo.</p>
         <div class="order-no">Pedido ${esc(o.id)}</div>
         <p>Total: <strong>${fmt(o.total)}</strong> · Pago: ${esc(o.customer.payment)}</p>
-        <p class="muted" style="margin-top:1rem">👉 <strong>Último paso:</strong> envíanos el pedido por WhatsApp para confirmarlo y coordinar el pago y la entrega.</p>
-        <div class="btns">
-          <a class="btn btn--whatsapp" style="margin:0" href="${esc(waLink(o))}" target="_blank" rel="noopener">💬 Enviar pedido por WhatsApp</a>
-          <button class="btn btn--outline" data-close>Seguir comprando</button>
+        <p class="muted" style="margin-top:1rem">Envía tu pedido por WhatsApp y coordinamos los detalles contigo.</p>
+        <details class="order-message">
+          <summary>Revisar pedido</summary>
+          <pre>${esc(orderText(o))}</pre>
+        </details>
+        <div class="order-send-action">
+          <a class="btn btn--whatsapp order-send-primary" style="margin:0" href="${esc(waLink(o))}" target="_blank" rel="noopener noreferrer">Enviar pedido por WhatsApp</a>
         </div>
+        <button type="button" class="btn btn--link success__continue" data-close>Seguir comprando</button>
       </div>`, "sm");
   }
 
   /* ---------- Mis pedidos ---------- */
   function renderOrders() {
-    const orders = ls.get("orders", []).filter((o) => o && Array.isArray(o.items) && o.customer);
+    const orders = D.orders(ls.get("orders", []));
+    ls.set("orders", orders);
+    $("#clearPrivateData").hidden = !orders.length && !D.customer(ls.get("customer", {}));
     $("#ordersList").innerHTML = orders.length ? orders.map((o) => `
       <div class="order-card">
         <header><strong>${esc(o.id)}</strong><span class="status">${esc(o.status)}</span></header>
         <div class="muted">${esc(new Date(o.date).toLocaleString("es-PE"))}</div>
         <div style="margin:.5rem 0">${o.items.map((i) => `${+i.qty || 0}× ${esc(i.name)} (${esc(i.size)}, ${esc(i.color)})`).join("<br>")}</div>
         <div><strong>Total: ${fmt(+o.total || 0)}</strong> · ${esc(o.customer.payment)}</div>
-        <a class="btn btn--whatsapp btn--sm" style="margin-top:.6rem" href="${esc(waLink(o))}" target="_blank" rel="noopener">Reenviar por WhatsApp</a>
+        <div class="order-history-actions">
+          <a class="btn btn--whatsapp btn--sm order-send-primary" style="margin:0" href="${esc(waLink(o))}" target="_blank" rel="noopener noreferrer">Reenviar por WhatsApp</a>
+        </div>
       </div>`).join("") : `<div class="drawer-empty"><div class="big">📦</div><p>Aún no has realizado pedidos.</p></div>`;
-    const hasData = orders.length || ls.get("customer", null) || cart.length || wish.length;
-    if (hasData) {
-      $("#ordersList").insertAdjacentHTML("beforeend", `<p class="muted" style="font-size:.8rem;margin-top:1rem">Tus datos y pedidos se guardan solo en este dispositivo, nunca en nuestros servidores.</p>
-        <button class="btn btn--outline btn--sm btn--block" data-clear-data>🗑️ Borrar mis datos de este dispositivo</button>`);
-    }
   }
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-clear-data]")) return;
-    if (!confirm("¿Borrar tu nombre, teléfono, dirección, pedidos, carrito y favoritos guardados en este dispositivo?")) return;
-    ["customer", "orders", "cart", "wish"].forEach((k) => { try { localStorage.removeItem("tienda_" + k); } catch { /* sin acceso */ } });
-    cart = []; wish = [];
-    renderCart(); renderWish(); renderOrders(); renderGrid();
-    toast("Tus datos se borraron de este dispositivo", "success");
+
+  $("#clearPrivateData").addEventListener("click", () => {
+    if (!window.confirm("¿Borrar el historial y los datos de contacto guardados en este navegador?")) return;
+    try { localStorage.removeItem("dulcenani_v3_orders"); localStorage.removeItem("dulcenani_v3_customer"); } catch {}
+    renderOrders(); toast("Historial y datos de contacto borrados", "success");
   });
 
   /* ---------- Textos legales ---------- */
@@ -634,17 +772,40 @@
         <ul><li>Los precios están en soles (S/).</li><li>El pedido se considera confirmado tras nuestra validación por WhatsApp.</li><li>Si una prenda se agota antes de confirmar, te avisamos y no se cobra.</li><li>Las imágenes son referenciales; los colores pueden variar ligeramente según la pantalla.</li></ul>`,
       privacidad: `<h2>Política de privacidad</h2>
         <p>${name} usa tus datos (nombre, celular y dirección) solo para atender tu pedido. Esta web no guarda tus datos en ningún servidor: se envían directamente por WhatsApp.</p>
-        <h4>Almacenamiento local</h4><p>Tu navegador recuerda tu carrito, favoritos y pedidos para que no los pierdas. No usamos cookies de seguimiento ni servicios de terceros. Puedes borrarlos cuando quieras desde «Mis pedidos» → «Borrar mis datos de este dispositivo».</p>`
+        <h4>Almacenamiento local</h4><p>Tu navegador recuerda el carrito y los favoritos. Al volver a entrar, se depuran los pedidos y datos de contacto de más de 30 días. Puedes borrarlos antes desde Mis pedidos. No guardes datos de pago sensibles ni contraseñas. No usamos cookies de seguimiento.</p>`
     };
     return L[key] || "";
   }
   document.addEventListener("click", (e) => {
     const l = e.target.closest("[data-legal]");
-    if (l) { e.preventDefault(); openModal(`<div class="legal">${legal(l.dataset.legal)}</div>`, "sm"); }
+    if (l) {
+      e.preventDefault();
+      const saved = $("#modal").classList.contains("open") ? {
+        nodes: [...$("#modalContent").childNodes], className: $("#modalBox").className,
+        scrollTop: $("#modalBox").scrollTop, focus: document.activeElement
+      } : null;
+      const label = $("#checkoutForm") ? "Volver a la compra" : "Volver";
+      openModal(`<div class="legal">${legal(l.dataset.legal)}${saved ? `<button type="button" class="btn btn--dark legal__back" data-close>${label}</button>` : ""}</div>`, "sm");
+      modalReturn = saved;
+    }
   });
 
   /* ---------- Navegación ---------- */
-  $("#burgerBtn").addEventListener("click", () => { $("#nav").classList.add("open"); lock(); });
+  // Los paneles móviles deben quedar fuera del encabezado con backdrop-filter.
+  const nav = $("#nav");
+  const navHome = document.createComment("Posición del menú de escritorio");
+  nav.before(navHome);
+  const mobileNav = matchMedia("(max-width: 1024px)");
+  function positionNav() {
+    if (nav.classList.contains("open")) closeAll();
+    if (mobileNav.matches) document.body.appendChild(nav);
+    else navHome.after(nav);
+  }
+  positionNav();
+  if (mobileNav.addEventListener) mobileNav.addEventListener("change", positionNav);
+  else mobileNav.addListener(positionNav);
+  $("#burgerBtn").addEventListener("click", () => { closeAll(); nav.classList.add("open"); $("#burgerBtn").setAttribute("aria-expanded", "true"); lock(); });
+  $("#navOrdersBtn").addEventListener("click", () => { renderOrders(); openDrawer("#ordersDrawer"); });
   $("#cartBtn").addEventListener("click", () => openDrawer("#cartDrawer"));
   $("#wishBtn").addEventListener("click", () => openDrawer("#wishDrawer"));
   $("#ordersBtn").addEventListener("click", () => { renderOrders(); openDrawer("#ordersDrawer"); });
@@ -666,7 +827,7 @@
     const form = e.target;
     if (!validate(form)) return toast("Completa todos los campos", "error");
     const d = Object.fromEntries(new FormData(form));
-    const text = `Hola ${STORE.name}, soy ${d.name.trim()}.\n\n${d.message.trim()}`;
+    const text = `Hola ${STORE.name}, soy ${D.text(d.name, 80)}.\n\n${D.text(d.message, 2000, true)}`;
     window.open(`https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
     form.reset();
   });
@@ -674,28 +835,34 @@
   /* ---------- Inicio ---------- */
   $("#year").textContent = new Date().getFullYear();
   bindFilters();
-  fetch(CATALOGO, { cache: "no-cache" })
-    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then((data) => {
-      STORE = data.store || {};
-      PRODUCTS = (data.products || []).filter((p) => p.variants && p.variants.length);
+  D.loadCatalog(CATALOGO)
+    .then((raw) => {
+      const data = D.catalog(raw, WHATSAPP);
+      STORE = data.store;
+      PRODUCTS = data.products;
       PRODUCTS.forEach((p) => p.variants.forEach((v) => BY_SKU.set(v.sku, { p, v })));
       if (data.updated) $("#updated").textContent = `· Catálogo actualizado el ${data.updated}`;
       // Carrito y favoritos guardados: solo lo que sigue existiendo y disponible
       const before = ls.get("cart", []);
-      cart = (Array.isArray(before) ? before : [])
-        .filter((i) => i && BY_SKU.has(i.sku) && BY_SKU.get(i.sku).v.stock !== "agotado")
-        .map((i) => ({ sku: i.sku, qty: Math.min(MAX_QTY, Math.max(1, parseInt(i.qty, 10) || 1)) }));
+      cart = D.cart(before, BY_SKU);
+      ls.set("cart", cart);
       if (Array.isArray(before) && cart.length < before.length) toast("Algunas prendas de tu carrito ya no están disponibles y se quitaron.");
-      wish = (ls.get("wish", []) || []).filter((id) => byId(id));
+      const savedWish = ls.get("wish", []);
+      wish = Array.isArray(savedWish) ? [...new Set(savedWish.slice(0, D.LIMIT.products).filter((id) => D.id(id) && byId(id)))] : [];
+      ls.set("wish", wish);
+      const saved = D.savedCustomer(ls.get("customer", {}));
+      if (!Object.keys(saved).length) { try { localStorage.removeItem("dulcenani_v3_customer"); } catch {} }
       buildCategories();
       buildFilters();
+      renderNewArrivals();
       renderGrid();
       renderCart();
       renderWish();
       renderOrders();
       const m = location.hash.match(/^#p=(.+)$/);
-      if (m) openProduct(decodeURIComponent(m[1]));
+      if (m && m[1].length <= 240) {
+        try { const id = D.id(decodeURIComponent(m[1])); if (id) openProduct(id); } catch { /* Ignorar enlaces incompletos. */ }
+      }
     })
     .catch(() => {
       $("#productGrid").innerHTML = `<p class="muted">No se pudo cargar el catálogo. Revisa tu conexión y vuelve a intentar.</p>`;

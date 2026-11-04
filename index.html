@@ -4,40 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Mi Tienda de Ropa | Tienda de ropa online</title>
-  <meta name="description" content="Catálogo de Mi Tienda de Ropa · 1 prendas. Pide por WhatsApp.">
-  <meta name="theme-color" content="#151515">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; media-src 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <title>Dulce Nani | Un toque dulce para tu estilo</title>
+  <meta name="description" content="Descubre el catálogo de Dulce Nani. Elige tus prendas favoritas y pide por WhatsApp.">
+  <meta name="theme-color" content="#fff8f2">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Mi Tienda de Ropa | Tienda de ropa online">
+  <meta property="og:title" content="Dulce Nani | Un toque dulce para tu estilo">
   <meta property="og:description" content="Mira el catálogo y pide por WhatsApp.">
+  
   
   <meta property="og:url" content="https://dulcenani.com/">
   <link rel="canonical" href="https://dulcenani.com/">
-  <meta property="og:image" content="https://dulcenani.com/img/d6ff0d9229fd02f6.webp">
+  <meta property="og:image" content="https://dulcenani.com/img/dulce-nani-logo.webp">
   
-  <link rel="icon" href="data:image/svg+xml,%26lt%3Bsvg%20xmlns%3D%26%2339%3Bhttp%3A//www.w3.org/2000/svg%26%2339%3B%20viewBox%3D%26%2339%3B0%200%2064%2064%26%2339%3B%26gt%3B%26lt%3Brect%20width%3D%26%2339%3B64%26%2339%3B%20height%3D%26%2339%3B64%26%2339%3B%20rx%3D%26%2339%3B14%26%2339%3B%20fill%3D%26%2339%3B%23151515%26%2339%3B/%26gt%3B%26lt%3Btext%20x%3D%26%2339%3B32%26%2339%3B%20y%3D%26%2339%3B44%26%2339%3B%20font-size%3D%26%2339%3B34%26%2339%3B%20font-family%3D%26%2339%3BGeorgia%26%2339%3B%20font-weight%3D%26%2339%3B700%26%2339%3B%20fill%3D%26%2339%3B%23f0c9a8%26%2339%3B%20text-anchor%3D%26%2339%3Bmiddle%26%2339%3B%26gt%3BM%26lt%3B/text%26gt%3B%26lt%3B/svg%26gt%3B">
-  <link rel="stylesheet" href="estilos.css?v=0839d3bc8f">
+  
+  <link rel="icon" href="img/dulce-nani-icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css?v=2ef241fb29">
+  <link rel="stylesheet" href="dulce-nani.css?v=dda1a6a26a">
+  <link rel="stylesheet" href="experiencia-v3.css?v=98481582a8">
 </head>
 <body>
+  <div class="brand-note"><div class="container"><span>Un poquito de dulzura para tu día ♡</span><a href="#tienda">Conoce el catálogo <span aria-hidden="true">↗</span></a></div></div>
 
   
 
   <header class="header" id="header">
     <div class="container header__inner">
-      <button class="icon-btn burger" id="burgerBtn" aria-label="Abrir menú">
+      <button class="icon-btn burger" id="burgerBtn" aria-label="Abrir menú" aria-controls="nav" aria-expanded="false">
         <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
 
-      <a href="#inicio" class="logo">Mi Tienda de Ropa</a>
+      <a href="#inicio" class="logo" aria-label="Dulce Nani, inicio"><span class="brand-symbol"><svg viewBox="0 0 100 76" fill="none" aria-hidden="true"><path d="M46 33C28 4 5 11 12 34c4 14 24 8 34 4M54 33C72 4 95 11 88 34c-4 14-24 8-34 4" fill="currentColor" stroke="#704c48" stroke-width="4" stroke-linejoin="round"/><path d="m44 40-15 26 18-7 4 10 4-29M56 40l15 26-18-7-4 10" fill="currentColor" stroke="#704c48" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="36" r="9" fill="#fff8f2" stroke="#704c48" stroke-width="4"/></svg></span><span class="brand-name">Dulce <em>Nani</em></span></a>
 
-      <nav class="nav" id="nav">
+      <nav class="nav" id="nav" aria-label="Navegación principal">
+        <button type="button" class="icon-btn nav__close" data-close aria-label="Cerrar menú">✕</button>
         <a href="#inicio">Inicio</a>
+        <a href="#novedades">Novedades</a>
         <span id="navCats" class="nav__cats"></span>
         <a href="#tienda" data-filter-cat="all">Ver todo</a>
+        <a href="#delivery">Delivery</a>
         <a href="#faq">Ayuda</a>
         <a href="#contacto">Contacto</a>
+        <button type="button" class="nav__orders" id="navOrdersBtn">Mis pedidos</button>
       </nav>
 
       <div class="header__actions">
@@ -67,17 +79,23 @@
 
   <main>
     <section class="hero" id="inicio">
-      <div class="hero__overlay"></div>
-      <div class="container hero__content">
-        <span class="eyebrow">Mi Tienda de Ropa</span>
-        <h1>Viste tu mejor<br><em>versión</em></h1>
-        <p>Elige tus prendas, arma tu pedido y envíalo por WhatsApp.</p>
-        <div class="hero__cta">
-          <a href="#tienda" class="btn btn--light">Comprar ahora</a>
-          <a href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta." target="_blank" rel="noopener" class="btn btn--ghost">Escríbenos</a>
+      <div class="container hero__layout">
+        <div class="hero__copy">
+          <span class="eyebrow"><span aria-hidden="true">✦</span> BIENVENIDA A DULCE NANI</span>
+          <h1>Tu estilo,<br>con un toque <em>dulce.</em></h1>
+          <p>Esos pequeños detalles que se sienten muy tú. Encuentra tus prendas favoritas y arma tu próximo look.</p>
+          <div class="hero__cta">
+            <a href="#novedades" class="btn btn--dark">Descubre tus favoritos <span aria-hidden="true">↗</span></a>
+            <a href="https://wa.me/51931025288?text=Hola%20Dulce%20Nani%2C%20tengo%20una%20consulta." target="_blank" rel="noopener noreferrer" class="hero__chat">Conversemos <span aria-hidden="true">♡</span></a>
+          </div>
+          <div class="hero__caption"><span aria-hidden="true">♡</span> Elige con calma. Pide por WhatsApp.</div>
+        </div>
+        <div class="hero__art hero__art--logo">
+          <img class="hero__logo-image" src="img/dulce-nani-logo.webp" width="1254" height="1254" alt="Logo de Dulce Nani con su conejito, una laptop rosa y detalles lila" fetchpriority="high" decoding="async">
         </div>
       </div>
     </section>
+    <div class="brand-ribbon" aria-hidden="true"><span>MUY TÚ</span> ♡ <span>UN TOQUE DULCE</span> ✦ <span>DULCE NANI</span> ♡ <span>MUY TÚ</span> ✦ <span>UN TOQUE DULCE</span></div>
 
     <section class="perks">
       <div class="container perks__grid">
@@ -88,6 +106,24 @@
       </div>
     </section>
 
+    <section class="section container new-arrivals" id="novedades" aria-labelledby="newArrivalsTitle" hidden>
+      <div class="section__head">
+        <div><span class="section-kicker">UN NUEVO FAVORITO TE ESPERA</span><h2 id="newArrivalsTitle">Lo nuevo de <em>Nani</em></h2></div>
+        <a href="#tienda" class="section-link">Explorar todo <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="section-intro">Un primer vistazo a las prendas más recientes de nuestro catálogo. ¿Cuál va contigo?</p>
+      <div class="new-arrivals__grid" id="newArrivalsGrid"></div>
+    </section>
+
+    <section class="buy-steps container" id="como-comprar" aria-labelledby="buyStepsTitle">
+      <div class="buy-steps__intro"><span class="section-kicker">ASÍ DE FÁCIL, ASÍ DE DULCE</span><h2 id="buyStepsTitle">Tu pedido en <em>3 pasitos.</em></h2><p>De ese «me encanta» a tu pedido, te acompañamos.</p></div>
+      <ol class="buy-steps__list">
+        <li><span class="step-number">01</span><span class="step-icon" aria-hidden="true">♡</span><h3>Encuentra tu favorito</h3><p>Explora las prendas, elige el color y la talla, y agrégalas al carrito.</p><a href="#tienda">Ver el catálogo <span aria-hidden="true">↗</span></a></li>
+        <li><span class="step-number">02</span><span class="step-icon" aria-hidden="true">✎</span><h3>Dale tu toque</h3><p>Completa tus datos y elige cómo prefieres recibir y pagar tu pedido.</p></li>
+        <li><span class="step-number">03</span><span class="step-icon" aria-hidden="true">✉</span><h3>Conversemos</h3><p>Envía el resumen por WhatsApp. Te confirmamos stock, pago y entrega.</p></li>
+      </ol>
+    </section>
+
     <section class="section container" id="categorias" hidden>
       <div class="section__head"><h2>Compra por categoría</h2></div>
       <div class="categories" id="categoryCards"></div>
@@ -95,7 +131,7 @@
 
     <section class="section container" id="tienda">
       <div class="section__head">
-        <h2>Tienda</h2>
+        <div><span class="section-kicker">ELIGE TUS FAVORITOS</span><h2>El catálogo de Nani</h2></div>
         <p class="muted" id="resultsCount"></p>
       </div>
 
@@ -147,18 +183,28 @@
       </div>
     </section>
 
-    <section class="promo">
-      <div class="container promo__inner">
-        <div>
-          <h2>¿Buscas algo en especial?</h2>
-          <p>Pregúntanos por tallas, colores o modelos que no veas aquí. Te respondemos por WhatsApp.</p>
+    <section class="delivery" id="delivery" aria-labelledby="deliveryTitle">
+      <div class="container delivery__layout">
+        <div class="delivery__art">
+          <img src="img/dulce-nani-delivery.webp" width="1254" height="1254" alt="Conejito repartidor de Dulce Nani en una motito rosa" loading="lazy" decoding="async">
         </div>
-        <a class="btn btn--light" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20estoy%20buscando..." target="_blank" rel="noopener">💬 Escribir por WhatsApp</a>
+        <div class="delivery__copy">
+          <span class="section-kicker">DULCE NANI DELIVERY</span>
+          <h2 id="deliveryTitle">Tu pedido llegará<br>con mucho <em>amor.</em></h2>
+          <p>Elige tus favoritos y coordinamos contigo la entrega. Tú pones el estilo, nosotras el toque dulce.</p>
+          <ul class="delivery__details">
+            <li><span aria-hidden="true">♡</span> Consulta la cobertura y el costo según tu distrito.</li>
+            <li><span aria-hidden="true">♡</span> Confirmamos la disponibilidad y el tiempo por WhatsApp.</li>
+            <li><span aria-hidden="true">♡</span> También puedes elegir recojo al finalizar tu compra.</li>
+          </ul>
+          <a class="btn btn--dark" href="https://wa.me/51931025288?text=Hola%20Dulce%20Nani%2C%20quiero%20consultar%20la%20cobertura%20y%20el%20costo%20del%20delivery%20para%20mi%20distrito." target="_blank" rel="noopener noreferrer">Consultar delivery <span aria-hidden="true">↗</span></a>
+          <span class="delivery__note">Coordinamos los detalles antes de confirmar tu pedido.</span>
+        </div>
       </div>
     </section>
 
     <section class="section container" id="faq">
-      <div class="section__head"><h2>Preguntas frecuentes</h2></div>
+      <div class="section__head"><div><span class="section-kicker">TE LO CONTAMOS FÁCIL</span><h2>Unas poquitas dudas</h2></div></div>
       <div class="faq">
         <details><summary>¿Cómo hago un pedido?</summary><p>Elige tus prendas, color y talla, y agrégalas al carrito. Pulsa «Finalizar compra», completa tus datos y envía el pedido por WhatsApp. Te respondemos para confirmar la disponibilidad, el pago y la entrega.</p></details>
         <details><summary>¿Cuáles son los métodos de pago?</summary><p>Yape, Plin, transferencia bancaria o efectivo. Coordinamos el pago contigo por WhatsApp al confirmar tu pedido.</p></details>
@@ -169,20 +215,21 @@
     </section>
 
     <section class="section container" id="contacto">
-      <div class="section__head"><h2>Contacto</h2></div>
+      <div class="section__head"><div><span class="section-kicker">HABLEMOS ♡</span><h2>Nos encantará leerte</h2></div></div>
       <div class="contact">
         <div class="contact__info">
-          <p>¿Tienes dudas? Escríbenos y te responderemos lo antes posible.</p>
+          <img class="contact__mascot" src="img/conejito-contacto.webp" width="1362" height="1155" alt="Conejito de Dulce Nani listo para ayudarte desde su laptop rosa" loading="lazy" decoding="async">
+          <p>¿Una talla, un color o algo que tienes en mente? Escríbenos y te ayudamos a elegir.</p>
           <ul>
             
             
             <li>💬 WhatsApp: +51931025288</li>
           </ul>
-          <a class="btn btn--whatsapp" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta." target="_blank" rel="noopener">💬 Escríbenos por WhatsApp</a>
+          <a class="btn btn--whatsapp" href="https://wa.me/51931025288?text=Hola%20Dulce%20Nani%2C%20tengo%20una%20consulta." target="_blank" rel="noopener noreferrer">💬 Escríbenos por WhatsApp</a>
         </div>
         <form class="contact__form" id="contactForm" novalidate>
-          <input name="name" required placeholder="Nombre" autocomplete="name">
-          <textarea name="message" required rows="5" placeholder="¿En qué podemos ayudarte?"></textarea>
+          <input name="name" required placeholder="Nombre" autocomplete="name" maxlength="80">
+          <textarea name="message" required maxlength="2000" rows="5" placeholder="¿En qué podemos ayudarte?"></textarea>
           <button class="btn btn--dark" type="submit">Enviar mensaje por WhatsApp</button>
         </form>
       </div>
@@ -192,13 +239,13 @@
   <footer class="footer">
     <div class="container footer__grid">
       <div>
-        <a class="logo logo--light" href="#inicio">Mi Tienda de Ropa</a>
+        <a class="logo logo--light" href="#inicio" aria-label="Dulce Nani, inicio"><span class="brand-symbol"><svg viewBox="0 0 100 76" fill="none" aria-hidden="true"><path d="M46 33C28 4 5 11 12 34c4 14 24 8 34 4M54 33C72 4 95 11 88 34c-4 14-24 8-34 4" fill="currentColor" stroke="#704c48" stroke-width="4" stroke-linejoin="round"/><path d="m44 40-15 26 18-7 4 10 4-29M56 40l15 26-18-7-4 10" fill="currentColor" stroke="#704c48" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="36" r="9" fill="#fff8f2" stroke="#704c48" stroke-width="4"/></svg></span><span class="brand-name">Dulce <em>Nani</em></span></a><p class="footer__tagline">Un toque dulce. Un estilo muy tuyo.</p>
         
         <div class="social">
           
           
           
-          <a href="https://wa.me/51931025288" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
+          <a href="https://wa.me/51931025288" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WA</a>
         </div>
       </div>
       <div>
@@ -208,6 +255,7 @@
       </div>
       <div>
         <h4>Ayuda</h4>
+        <a href="#como-comprar">Cómo comprar</a>
         <a href="#faq">Preguntas frecuentes</a>
         <a href="#" data-legal="pedidos">Pedidos y entregas</a>
         <a href="#" data-legal="terminos">Términos y condiciones</a>
@@ -219,12 +267,12 @@
       </div>
     </div>
     <div class="container footer__bottom">
-      <small>© <span id="year"></span> Mi Tienda de Ropa. Todos los derechos reservados. <span id="updated"></span></small>
+      <small>© <span id="year"></span> Dulce Nani. Todos los derechos reservados. <span id="updated"></span></small>
     </div>
   </footer>
 
-  <a class="wa-float" href="https://wa.me/51931025288?text=Hola%20Mi%20Tienda%20de%20Ropa%2C%20tengo%20una%20consulta."
-     target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+  <a class="wa-float" href="https://wa.me/51931025288?text=Hola%20Dulce%20Nani%2C%20tengo%20una%20consulta."
+     target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
     <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.6a10.6 10.6 0 0 1-5.4-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.6 10.6 0 1 1 16 26.6Zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.7 3.7 0 0 0-1.1 2.7 6.4 6.4 0 0 0 1.4 3.4 14.6 14.6 0 0 0 5.6 4.9c2.1.9 2.9 1 4 .8.6-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5-.1-.2-.3-.2-.6-.4Z"/></svg>
   </a>
 
@@ -257,6 +305,7 @@
       <button class="icon-btn" data-close aria-label="Cerrar">✕</button>
     </div>
     <div class="drawer__body" id="ordersList"></div>
+    <div class="drawer__foot"><button type="button" class="btn btn--link btn--block" id="clearPrivateData" hidden>Borrar historial y mis datos</button></div>
   </aside>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true">
@@ -269,6 +318,7 @@
   <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
   <noscript><p class="container empty">Para ver el catálogo activa JavaScript en tu navegador.</p></noscript>
 
-  <script src="tienda.js?v=72e6b154f6" data-catalogo="catalogo.json?v=68a165e985" defer></script>
+  <script src="datos-seguros.js?v=8805c20011" defer></script>
+  <script data-whatsapp="51931025288" src="tienda.js?v=c7e638f74d" data-catalogo="catalogo.json?v=ce7c72d99a" defer></script>
 </body>
 </html>
