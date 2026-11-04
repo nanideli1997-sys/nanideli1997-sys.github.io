@@ -606,7 +606,20 @@
         <div><strong>Total: ${fmt(+o.total || 0)}</strong> · ${esc(o.customer.payment)}</div>
         <a class="btn btn--whatsapp btn--sm" style="margin-top:.6rem" href="${esc(waLink(o))}" target="_blank" rel="noopener">Reenviar por WhatsApp</a>
       </div>`).join("") : `<div class="drawer-empty"><div class="big">📦</div><p>Aún no has realizado pedidos.</p></div>`;
+    const hasData = orders.length || ls.get("customer", null) || cart.length || wish.length;
+    if (hasData) {
+      $("#ordersList").insertAdjacentHTML("beforeend", `<p class="muted" style="font-size:.8rem;margin-top:1rem">Tus datos y pedidos se guardan solo en este dispositivo, nunca en nuestros servidores.</p>
+        <button class="btn btn--outline btn--sm btn--block" data-clear-data>🗑️ Borrar mis datos de este dispositivo</button>`);
+    }
   }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-clear-data]")) return;
+    if (!confirm("¿Borrar tu nombre, teléfono, dirección, pedidos, carrito y favoritos guardados en este dispositivo?")) return;
+    ["customer", "orders", "cart", "wish"].forEach((k) => { try { localStorage.removeItem("tienda_" + k); } catch { /* sin acceso */ } });
+    cart = []; wish = [];
+    renderCart(); renderWish(); renderOrders(); renderGrid();
+    toast("Tus datos se borraron de este dispositivo", "success");
+  });
 
   /* ---------- Textos legales ---------- */
   function legal(key) {
@@ -621,7 +634,7 @@
         <ul><li>Los precios están en soles (S/).</li><li>El pedido se considera confirmado tras nuestra validación por WhatsApp.</li><li>Si una prenda se agota antes de confirmar, te avisamos y no se cobra.</li><li>Las imágenes son referenciales; los colores pueden variar ligeramente según la pantalla.</li></ul>`,
       privacidad: `<h2>Política de privacidad</h2>
         <p>${name} usa tus datos (nombre, celular y dirección) solo para atender tu pedido. Esta web no guarda tus datos en ningún servidor: se envían directamente por WhatsApp.</p>
-        <h4>Almacenamiento local</h4><p>Tu navegador recuerda tu carrito, favoritos y pedidos para que no los pierdas. No usamos cookies de seguimiento.</p>`
+        <h4>Almacenamiento local</h4><p>Tu navegador recuerda tu carrito, favoritos y pedidos para que no los pierdas. No usamos cookies de seguimiento ni servicios de terceros. Puedes borrarlos cuando quieras desde «Mis pedidos» → «Borrar mis datos de este dispositivo».</p>`
     };
     return L[key] || "";
   }

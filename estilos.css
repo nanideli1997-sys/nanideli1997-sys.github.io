@@ -1,4 +1,11 @@
 /* Página web pública de la tienda (diseño basado en demo_tienda/tienda_web). */
+/* Fuentes servidas desde la propia web: los visitantes no se conectan a terceros (licencia OFL). */
+@font-face { font-family: "Inter"; font-weight: 400; font-display: swap; src: url("fuentes/inter-400.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-display: swap; src: url("fuentes/inter-500.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-display: swap; src: url("fuentes/inter-600.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 700; font-display: swap; src: url("fuentes/inter-700.woff2") format("woff2"); }
+@font-face { font-family: "Playfair Display"; font-weight: 600; font-display: swap; src: url("fuentes/playfair-600.woff2") format("woff2"); }
+@font-face { font-family: "Playfair Display"; font-weight: 700; font-display: swap; src: url("fuentes/playfair-700.woff2") format("woff2"); }
 :root {
   --bg: #ffffff;
   --bg-soft: #f6f4f1;
